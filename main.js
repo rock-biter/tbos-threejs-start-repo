@@ -1,3 +1,4 @@
+import './style.css'
 import {
 	Clock,
 	Mesh,
@@ -19,10 +20,27 @@ const fragmentShader = `
 uniform vec2 u_resolution;
 uniform float u_time;
 
+#define PI 3.14159265359
+
+// Plot a line on Y using a value between 0.0-1.0
+float plot(vec2 st, float pct) {   
+		return smoothstep( pct-0.005, pct, st.y) -
+		smoothstep( pct, pct+0.005, st.y);
+}
+
 void main() {
     vec2 st = gl_FragCoord.xy/u_resolution.xy;
+		float tile = 7.;
+		float val = abs(sin((st.x) * PI + u_time ) * 0.5 + 0.5 ) * 10.;
+		float y = 1. - ceil( (st.x ) * tile) / tile;
+		float x = 1. - ceil( (st.y ) * tile) / tile;
+		vec3 color = mix( mix( vec3(y,0.,0.), vec3(0,x,x), 0.5 ), vec3(x,x*y, y), 0.5 );
+
+    // Plot a line
+    // float pct = plot(st,y);
+    color = mix(color,vec3(0.,1.,0.),0.);
     
-    gl_FragColor=vec4(1.,0.,1.0,1.0);
+    gl_FragColor=vec4(color,1.0);
 }
 `
 
